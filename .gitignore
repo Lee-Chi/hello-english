@@ -1,0 +1,6 @@
+/.vscode
+*.http
+config.json
+/init_word.go
+/sight_word.json
+/sight_word_patch.json
