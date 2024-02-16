@@ -19,7 +19,7 @@ func (g Group) Explain(ctx *gin.Context) {
 	type Word struct {
 		Letters      string   `json:"letters"`
 		PartOfSpeech string   `json:"partOfSpeech"`
-		Explain      string   `json:"explain"`
+		Translation  string   `json:"translation"`
 		Sentences    []string `json:"sentences"`
 	}
 
@@ -44,7 +44,7 @@ func (g Group) Explain(ctx *gin.Context) {
 			{
 				Letters:      "bark",
 				PartOfSpeech: "vt",
-				Explain:      "to shout or speak loudly and insistently",
+				Translation:  "to shout or speak loudly and insistently",
 				Sentences: []string{
 					"The dog barked at the intruder.", "The coach barked orders at the players.", "He barked out a command to stop.",
 				},
@@ -55,7 +55,7 @@ func (g Group) Explain(ctx *gin.Context) {
 		template = string(t)
 	})
 
-	content := fmt.Sprintf(`對以下英文單字做解釋並提供3個例句:%s。以json方式輸出，key包含letters,partOfSpeech,explain,sentences。範例: %s`, request.Word, template)
+	content := fmt.Sprintf(`對以下英文單字做解釋並提供3個例句:%s。以json方式輸出，key包含letters,partOfSpeech,translation,sentences。範例: %s`, request.Word, template)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{

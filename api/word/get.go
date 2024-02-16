@@ -2,7 +2,6 @@ package word
 
 import (
 	"net/http"
-	"time"
 
 	"hello-english/base/api"
 	"hello-english/base/english"
@@ -37,27 +36,14 @@ func (g Group) Get(ctx *gin.Context) {
 
 	request.Type = ctx.Request.URL.Query().Get("type")
 
-	wordID, wordSightID, err := getTodayID(ctx)
-	if err != nil {
-		code := api.DatabaseError
-		logger.Error(code.Dump("Get today id error: %v", err))
-		ctx.JSON(http.StatusInternalServerError, code.Response())
-		return
-	}
-
-	collection := db.Collection(model.CWord).Where(english.Word_Key_ID.Eq(wordID))
+	collection := db.Collection(model.CWord).Sort(english.Word_Key_ID.Asc())
 
 	if request.Type == english.Type_Sight {
 		var wordSight struct {
 			ID              primitive.ObjectID `bson:"_id"`
 			model.WordSight `bson:"-,inline"`
 		}
-		if err := db.Collection(model.CWordSight).
-			Where(english.Word_Key_ID.Eq(wordSightID)).
-			FindOne(
-				ctx,
-				&wordSight,
-			); err != nil {
+		if err := db.Collection(model.CWordSight).Sort(english.Word_Key_ID.Asc()).FindOne(ctx, &wordSight); err != nil {
 			code := api.DatabaseError
 			logger.Error(code.Dump("Find word sight error: %v", err))
 			ctx.JSON(http.StatusInternalServerError, code.Response())
@@ -95,89 +81,4 @@ func (g Group) Get(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 	return
-}
-
-func getTodayID(ctx *gin.Context) (primitive.ObjectID, primitive.ObjectID, error) {
-	var wordToday struct {
-		ID              primitive.ObjectID `bson:"_id"`
-		model.WordToday `bson:"-,inline"`
-	}
-
-	if err := db.Collection(model.CWordToday).FindOneOrZero(ctx, &wordToday); err != nil {
-		return primitive.NilObjectID, primitive.NilObjectID, err
-	}
-
-	if wordToday.ID.IsZero() {
-		wordToday.ID = primitive.NewObjectID()
-	}
-
-	if wordToday.Date < time.Now().Format("2006-01-02") {
-		var word struct {
-			ID         primitive.ObjectID `bson:"_id"`
-			model.Word `bson:"-,inline"`
-		}
-
-		if err := db.Collection(model.CWord).
-			Where(english.Word_Key_ID.Gt(wordToday.WordID)).
-			Sort(english.Word_Key_ID.Asc()).
-			FindOneOrZero(
-				ctx,
-				&word,
-			); err != nil {
-			return primitive.NilObjectID, primitive.NilObjectID, err
-		}
-		if word.ID.IsZero() {
-			if err := db.Collection(model.CWord).
-				Sort(english.Word_Key_ID.Asc()).
-				FindOneOrZero(
-					ctx,
-					&word,
-				); err != nil {
-				return primitive.NilObjectID, primitive.NilObjectID, err
-			}
-		}
-
-		wordToday.WordID = word.ID
-
-		var wordSight struct {
-			ID              primitive.ObjectID `bson:"_id"`
-			model.WordSight `bson:"-,inline"`
-		}
-
-		if err := db.Collection(model.CWordSight).
-			Where(english.Word_Key_ID.Gt(wordToday.WordSightID)).
-			Sort(english.Word_Key_ID.Asc()).
-			FindOneOrZero(
-				ctx,
-				&wordSight,
-			); err != nil {
-			return primitive.NilObjectID, primitive.NilObjectID, err
-		}
-
-		if wordSight.ID.IsZero() {
-			if err := db.Collection(model.CWordSight).
-				Sort(english.Word_Key_ID.Asc()).
-				FindOneOrZero(
-					ctx,
-					&wordSight,
-				); err != nil {
-				return primitive.NilObjectID, primitive.NilObjectID, err
-			}
-		}
-
-		wordToday.WordSightID = wordSight.ID
-
-		wordToday.Date = time.Now().Format("2006-01-02")
-
-		if err := db.Collection(model.CWordToday).
-			Where(english.Word_Key_ID.Eq(wordToday.ID)).
-			Upsert(
-				ctx,
-				wordToday,
-			); err != nil {
-			return primitive.NilObjectID, primitive.NilObjectID, err
-		}
-	}
-
-	return wordToday.WordID, wordToday.WordSightID, nil
 }
