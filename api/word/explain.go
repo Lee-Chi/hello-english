@@ -55,7 +55,7 @@ func (g Group) Explain(ctx *gin.Context) {
 		template = string(t)
 	})
 
-	content := fmt.Sprintf(`對以下英文單字做解釋並提供3個例句:%s。以json方式輸出，key包含letters,partOfSpeech,translation,sentences。範例: %s`, request.Word, template)
+	content := fmt.Sprintf(`對以下英文單字做解釋並提供3個例句:%s。以json方式呈現，key包含letters,partOfSpeech,translation,sentences。範例: %s`, request.Word, template)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{
