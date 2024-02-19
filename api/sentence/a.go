@@ -1,3 +1,7 @@
 package sentence
 
-type Group struct{}
+import "hello-english/api/sentence/practice"
+
+type Group struct {
+	Practice practice.Group
+}
