@@ -97,8 +97,8 @@ func main() {
 	router.POST("/api/sentence/check", api.Sentence.Check)
 	router.POST("/api/sentence/translate", api.Sentence.Translate)
 	router.POST("/api/sentence/advise", api.Sentence.Advise)
-	router.POST("/api/sentence/practice/challange", api.Sentence.Practice.Challange)
-	router.POST("/api/sentence/practice/answer", api.Sentence.Practice.Answer)
+	router.POST("/api/sentence/practice/ready", api.Sentence.Practice.Ready)
+	router.POST("/api/sentence/practice/submit", api.Sentence.Practice.Submit)
 
 	router.POST("/api/paragraph/explain", nil)
 	router.POST("/api/paragraph/extract", nil)
