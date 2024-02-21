@@ -6,6 +6,7 @@ import (
 	"hello-english/base/api"
 	"hello-english/base/openai"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/Lee-Chi/go-sdk/logger"
@@ -17,7 +18,6 @@ var template string
 
 func (g Group) Explain(ctx *gin.Context) {
 	type Word struct {
-		Letters      string   `json:"letters"`
 		PartOfSpeech string   `json:"partOfSpeech"`
 		Translation  string   `json:"translation"`
 		Sentences    []string `json:"sentences"`
@@ -42,7 +42,6 @@ func (g Group) Explain(ctx *gin.Context) {
 	once.Do(func() {
 		example := []Word{
 			{
-				Letters:      "bark",
 				PartOfSpeech: "vt",
 				Translation:  "to shout or speak loudly and insistently",
 				Sentences: []string{
@@ -55,9 +54,13 @@ func (g Group) Explain(ctx *gin.Context) {
 		template = string(t)
 	})
 
-	content := fmt.Sprintf(`對以下英文單字做解釋並提供3個例句:%s。以json方式呈現，key包含letters,partOfSpeech,translation,sentences。範例: %s`, request.Word, template)
+	content := fmt.Sprintf(`Translate the following words and provide port of speech and three example. output example: %s, input: %s`, template, request.Word)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: "You are an English teacher designed to output JSON array.",
+		},
 		{
 			Role:    openai.ChatMessageRoleUser,
 			Content: content,
@@ -68,6 +71,11 @@ func (g Group) Explain(ctx *gin.Context) {
 		logger.Error(code.Dump("Chat error: %v", err))
 		ctx.JSON(http.StatusInternalServerError, code.Response())
 		return
+	}
+
+	if strings.HasPrefix(reply, "```json") {
+		reply = strings.TrimPrefix(reply, "```json")
+		reply = strings.TrimSuffix(reply, "```")
 	}
 
 	words := make([]Word, 0)

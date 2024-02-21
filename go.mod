@@ -6,7 +6,7 @@ require (
 	github.com/Lee-Chi/go-sdk v0.0.0-20240215133352-0b435c9b005e
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/sashabaranov/go-openai v1.19.2
+	github.com/sashabaranov/go-openai v1.19.4
 	go.mongodb.org/mongo-driver v1.13.1
 )
 

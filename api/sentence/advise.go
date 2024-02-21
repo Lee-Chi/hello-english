@@ -39,9 +39,13 @@ func (g Group) Advise(ctx *gin.Context) {
 		return
 	}
 
-	content := fmt.Sprintf(`現在你是一位專業的英語老師。校閱以下英文句子，以json方式呈現，key包含original,revised,reasions。範例:%s。 英文句子: %s`, Template, request.Sentence)
+	content := fmt.Sprintf(`Check the following sentences, output example: %s。 input: %s`, Template, request.Sentence)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: "You are an English teacher designed to output JSON.",
+		},
 		{
 			Role:    openai.ChatMessageRoleUser,
 			Content: content,

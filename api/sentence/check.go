@@ -31,6 +31,10 @@ func (g Group) Check(ctx *gin.Context) {
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: "You are an English teacher.",
+		},
+		{
 			Role:    openai.ChatMessageRoleUser,
 			Content: content,
 		},

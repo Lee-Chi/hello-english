@@ -27,9 +27,13 @@ func (g Group) Translate(ctx *gin.Context) {
 		return
 	}
 
-	content := fmt.Sprintf(`翻譯以下英文句子為繁體中文，如果不是句子，回答'無法翻譯': %s`, request.Sentence)
+	content := fmt.Sprintf(`Translate the following text to Traditional Chinese: %s`, request.Sentence)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: "You are an English teacher.",
+		},
 		{
 			Role:    openai.ChatMessageRoleUser,
 			Content: content,

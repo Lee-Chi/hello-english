@@ -39,7 +39,7 @@ func Chat(ctx context.Context, messages ChatCompletionMessages) (string, error) 
 	resp, err := openaiClient.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
-			Model:    openai.GPT3Dot5Turbo,
+			Model:    openai.GPT3Dot5Turbo0125,
 			Messages: messages.ToOpenAI(),
 		},
 	)

@@ -11,12 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const Template string = `{"correct_answer": "How do I invoke this function?", "advices":["The word 'call' can be replaced with 'invoke' or 'execute'.","The word 'function' can be replaced with 'method' or 'procedure'."]}`
+const Template string = `{"correct_translation": "How do I invoke this function?", "advices":["The word 'call' can be replaced with 'invoke' or 'execute'.","The word 'function' can be replaced with 'method' or 'procedure'."]}`
 
 func (g Group) Submit(ctx *gin.Context) {
 	type Practice struct {
-		CorrectAnswer string   `json:"correct_answer"`
-		Advices       []string `json:"advices"`
+		CorrectTranslation string   `json:"correct_translation"`
+		Advices            []string `json:"advices"`
 	}
 
 	var request struct {
@@ -37,12 +37,12 @@ func (g Group) Submit(ctx *gin.Context) {
 		return
 	}
 
-	content := fmt.Sprintf(`Chinese question:%s,English answer:%s,give the correct answer and three advices. Show by json format,key contains correct_answer, advices. example:%s`, request.Question, request.Answer, Template)
+	content := fmt.Sprintf(`Is the translation of %s is %s, provide the correct tranlation and three advices. output example:%s`, request.Question, request.Answer, Template)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "You are an English teacher. Now you are going to do a Trandition Chinese to English translation exercise.",
+			Role:    openai.ChatMessageRoleSystem,
+			Content: "You are an English teacher designed to output JSON. Now you are going to do a Trandition Chinese to English translation exercise.",
 		},
 		{
 			Role:    openai.ChatMessageRoleUser,
@@ -64,7 +64,7 @@ func (g Group) Submit(ctx *gin.Context) {
 		return
 	}
 
-	response.CorrectAnswer = practice.CorrectAnswer
+	response.CorrectAnswer = practice.CorrectTranslation
 	response.Advices = practice.Advices
 
 	ctx.JSON(http.StatusOK, response)

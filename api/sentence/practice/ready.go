@@ -32,12 +32,12 @@ func (g Group) Ready(ctx *gin.Context) {
 		return
 	}
 
-	content := fmt.Sprintf(`Give me a random question about %s. Show by json format. key contain chinese_question. example:{"chinese_question": "這個條件式成立嗎？"} `, request.Topic)
+	content := fmt.Sprintf(`Give me a random question about %s. output example:{"chinese_question": "這個條件式成立嗎？"} `, request.Topic)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "You are an English teacher. Now you are going to do a Traditional Chinese to English translation exercise.",
+			Role:    openai.ChatMessageRoleSystem,
+			Content: "You are an English teacher designed to output JSON. Now you are going to do a Traditional Chinese to English translation exercise.",
 		},
 		{
 			Role:    openai.ChatMessageRoleUser,
