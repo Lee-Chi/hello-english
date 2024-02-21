@@ -37,7 +37,7 @@ func (g Group) Ready(ctx *gin.Context) {
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{
 			Role:    openai.ChatMessageRoleAssistant,
-			Content: "You are an English teacher. Now you are going to do a Chinese-to-English translation exercise.",
+			Content: "You are an English teacher. Now you are going to do a Traditional Chinese to English translation exercise.",
 		},
 		{
 			Role:    openai.ChatMessageRoleUser,

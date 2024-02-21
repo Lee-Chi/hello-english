@@ -26,7 +26,7 @@ func (g Group) Submit(ctx *gin.Context) {
 
 	var response struct {
 		api.ResponseBase
-		CorrectAnswer string   `json:"correct_answer"`
+		CorrectAnswer string   `json:"correctAnswer"`
 		Advices       []string `json:"advices"`
 	}
 
@@ -42,7 +42,7 @@ func (g Group) Submit(ctx *gin.Context) {
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{
 			Role:    openai.ChatMessageRoleAssistant,
-			Content: "You are an English teacher. Now you are going to do a Chinese-to-English translation exercise.",
+			Content: "You are an English teacher. Now you are going to do a Trandition Chinese to English translation exercise.",
 		},
 		{
 			Role:    openai.ChatMessageRoleUser,
