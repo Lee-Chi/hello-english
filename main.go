@@ -15,6 +15,7 @@ import (
 
 	"github.com/Lee-Chi/go-sdk/logger"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -82,10 +83,10 @@ func main() {
 	logger.Info("service start ....")
 
 	router := gin.Default()
-	// router.Use(static.Serve("/", static.LocalFile("./out", false)))
-	// router.GET("/", func(ctx *gin.Context) {
-	// 	ctx.File("./out/index.html")
-	// })
+	router.Use(static.Serve("/", static.LocalFile("./out", false)))
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.File("./out/index.html")
+	})
 
 	router.Use(cors.New(CorsConfig()))
 
