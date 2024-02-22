@@ -13,7 +13,7 @@ import (
 
 func (g Group) Ready(ctx *gin.Context) {
 	type Practice struct {
-		ChineseQuestion string `json:"chinese_question"`
+		Chinese string `json:"chinese"`
 	}
 
 	var request struct {
@@ -32,7 +32,7 @@ func (g Group) Ready(ctx *gin.Context) {
 		return
 	}
 
-	content := fmt.Sprintf(`Give me a random question about %s. output example:{"chinese_question": "這個條件式成立嗎？"} `, request.Topic)
+	content := fmt.Sprintf(`Give me a random Traditional Chinese sentence about %s from wiki. output example:{"chinese": "這個條件式成立嗎？"} `, request.Topic)
 
 	reply, err := openai.Chat(ctx, []openai.ChatCompletionMessage{
 		{
@@ -59,7 +59,7 @@ func (g Group) Ready(ctx *gin.Context) {
 		return
 	}
 
-	response.Question = practice.ChineseQuestion
+	response.Question = practice.Chinese
 
 	ctx.JSON(http.StatusOK, response)
 	return
