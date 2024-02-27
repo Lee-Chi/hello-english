@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"hello-english/base/api"
-	"hello-english/base/english"
 	"hello-english/db"
 	"hello-english/db/model"
 
@@ -33,11 +32,11 @@ func (g Group) Backward(ctx *gin.Context) {
 
 	id, _ := primitive.ObjectIDFromHex(request.ID)
 
-	colWord := db.Collection(model.CWord)
+	colWord := db.Collection(model.CWordBase)
 
 	switch request.Type {
-	case english.Type_Sight:
-		colWordSight := db.Collection(model.CWordSight).Sort(english.Word_Key_ID.Desc()).Where(english.Word_Key_ID.Lt(id))
+	case model.Type_Sight:
+		colWordSight := db.Collection(model.CWordSight).Sort(model.Key.WordSight.ID.Desc()).Where(model.Key.WordSight.ID.Lt(id))
 		count, err := colWordSight.Count(ctx)
 		if err != nil {
 			code := api.DatabaseError
@@ -65,7 +64,7 @@ func (g Group) Backward(ctx *gin.Context) {
 
 		letters := wordSight.Letters
 
-		colWord = colWord.Where(english.Word_Key_Letters.Eq(letters))
+		colWord = colWord.Where(model.Key.WordBase.Letters.Eq(letters))
 
 		var word struct {
 			ID         primitive.ObjectID `bson:"_id"`
@@ -89,7 +88,7 @@ func (g Group) Backward(ctx *gin.Context) {
 		response.Word.ID = wordSight.ID.Hex()
 	default:
 		// if not sight word, use the previous word
-		colWord = colWord.Where(english.Word_Key_ID.Lt(id)).Sort(english.Word_Key_ID.Desc())
+		colWord = colWord.Where(model.Key.WordBase.ID.Lt(id)).Sort(model.Key.WordBase.ID.Desc())
 
 		var word struct {
 			ID         primitive.ObjectID `bson:"_id"`
