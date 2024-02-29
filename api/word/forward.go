@@ -88,7 +88,20 @@ func (g Group) Forward(ctx *gin.Context) {
 		response.Word.ID = wordSight.ID.Hex()
 	default:
 		// if not sight word, use the next word
-		colWord = colWord.Where(model.Key.WordBase.ID.Gt(id)).Sort(model.Key.WordBase.ID.Asc())
+		colWord = colWord.Sort(model.Key.WordBase.ID.Asc()).Where(model.Key.WordBase.ID.Gt(id))
+
+		count, err := colWord.Count(ctx)
+		if err != nil {
+			code := api.DatabaseError
+			logger.Error(code.Dump("Count word error: %v", err))
+			ctx.JSON(http.StatusInternalServerError, code.Response())
+			return
+		}
+
+		if count == 0 {
+			// if not found, use the first word
+			colWord = colWord.Where()
+		}
 
 		var word struct {
 			ID         primitive.ObjectID `bson:"_id"`

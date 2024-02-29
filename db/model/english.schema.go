@@ -41,7 +41,7 @@ const CWordBookmark = "word_bookmark"
 
 type WordBookmark struct {
 	WordExplained `bson:"-,inline"`
-	UserId        primitive.ObjectID `bson:"userId"`
-	Index         int                `bson:"index"`
+	UserID        primitive.ObjectID `bson:"userId"`
+	Index         int64              `bson:"index"`
 	CreatedAt     time.Time          `bson:"createdAt"`
 }

@@ -1,6 +1,9 @@
 package word
 
+import "hello-english/api/word/bookmark"
+
 type Group struct {
+	Bookmark bookmark.Group
 }
 
 var g Group

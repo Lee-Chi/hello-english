@@ -14,11 +14,9 @@ import (
 )
 
 func (g Group) Get(ctx *gin.Context) {
-	type Word struct {
-		Letters      string   `json:"letters"`
-		PartOfSpeech string   `json:"partOfSpeech"`
-		Translation  string   `json:"translation"`
-		Sentences    []string `json:"sentences"`
+	type WordBookmark struct {
+		ID string `json:"id"`
+		Word
 	}
 
 	var request struct {
@@ -29,8 +27,8 @@ func (g Group) Get(ctx *gin.Context) {
 
 	var response struct {
 		api.ResponseBase
-		Count int64  `json:"count"`
-		Words []Word `json:"words"`
+		Count int64          `json:"count"`
+		Words []WordBookmark `json:"words"`
 	}
 
 	page, err := strconv.ParseInt(ctx.Request.URL.Query().Get("page"), 10, 64)
@@ -77,7 +75,10 @@ func (g Group) Get(ctx *gin.Context) {
 
 	collection = collection.Sort(model.Key.WordBookmark.ID.Desc()).Skip(skip).Limit(limit)
 
-	var wordBookmarks []model.WordBookmark
+	var wordBookmarks []struct {
+		ID                 primitive.ObjectID `bson:"_id"`
+		model.WordBookmark `bson:"-,inline"`
+	}
 	if err := collection.Find(ctx, &wordBookmarks); err != nil {
 		code := api.DatabaseError
 		logger.Error(code.Dump("Find word bookmark error: %v", err))
@@ -86,11 +87,14 @@ func (g Group) Get(ctx *gin.Context) {
 	}
 
 	for _, wordBookmark := range wordBookmarks {
-		response.Words = append(response.Words, Word{
-			Letters:      wordBookmark.Letters,
-			PartOfSpeech: wordBookmark.PartOfSpeech,
-			Translation:  wordBookmark.Translation,
-			Sentences:    wordBookmark.Sentences,
+		response.Words = append(response.Words, WordBookmark{
+			ID: wordBookmark.ID.Hex(),
+			Word: Word{
+				Letters:      wordBookmark.Letters,
+				PartOfSpeech: wordBookmark.PartOfSpeech,
+				Translation:  wordBookmark.Translation,
+				Sentences:    wordBookmark.Sentences,
+			},
 		})
 	}
 

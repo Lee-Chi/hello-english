@@ -94,6 +94,11 @@ func main() {
 	router.POST("/api/word/forward", api.Word.Forward)
 	router.POST("/api/word/backward", api.Word.Backward)
 	router.POST("/api/word/explain", api.Word.Explain)
+	router.POST("/api/word/search", api.Word.Search)
+
+	router.GET("/api/word/bookmark", api.Word.Bookmark.Get)
+	router.PUT("/api/word/bookmark", api.Word.Bookmark.Add)
+	router.DELETE("/api/word/bookmark", api.Word.Bookmark.Delete)
 
 	router.POST("/api/sentence/check", api.Sentence.Check)
 	router.POST("/api/sentence/translate", api.Sentence.Translate)
